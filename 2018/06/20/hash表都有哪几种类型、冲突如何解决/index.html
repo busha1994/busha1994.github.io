@@ -1,398 +1,45 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  
-  
-  <meta name="description" content="Hash表的概述
-Hash表是一种数据结构，它通过把关键码值映射到表中的一个位置 来访问记录，来加快查找的速度。这个映射函数叫做散列函数，存放记录的数组叫做散列表。
-Hash表有Hashtable、HashMap、ConcurrentHashMap、LinkedHashMap、TreeMap.
-给定" />
-  
+extends base
 
-  
-  
-  <meta name="google-site-verification" content="NCXVSqxqB-os803-VFMtIEd1SUNJVOIjctCfNYUwD0w" />
-  <meta name="baidu-site-verification" content="Nzwx7HuplM" />
-  
-  <meta name="msvalidate.01" content="9E9EA92F7E5327E1FE8A5196D5253664" />
-  
-  
-  
-  <title>hash表都有哪几种类型、冲突如何解决 | Hexo</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Hash表的概述 Hash表是一种数据结构，它通过把关键码值映射到表中的一个位置 来访问记录，来加快查找的速度。这个映射函数叫做散列函数，存放记录的数组叫做散列表。 Hash表有Hashtable、HashMap、ConcurrentHashMap、LinkedHashMap、TreeMap. 给定表M，存在函数f(key)，对任意给定的关键字值key，代入函数后若能得到包含该关键字的记录在表中的">
-<meta property="og:type" content="article">
-<meta property="og:title" content="hash表都有哪几种类型、冲突如何解决">
-<meta property="og:url" content="http://yoursite.com/2018/06/20/hash表都有哪几种类型、冲突如何解决/index.html">
-<meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="Hash表的概述 Hash表是一种数据结构，它通过把关键码值映射到表中的一个位置 来访问记录，来加快查找的速度。这个映射函数叫做散列函数，存放记录的数组叫做散列表。 Hash表有Hashtable、HashMap、ConcurrentHashMap、LinkedHashMap、TreeMap. 给定表M，存在函数f(key)，对任意给定的关键字值key，代入函数后若能得到包含该关键字的记录在表中的">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-06-20T08:00:10.680Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="hash表都有哪几种类型、冲突如何解决">
-<meta name="twitter:description" content="Hash表的概述 Hash表是一种数据结构，它通过把关键码值映射到表中的一个位置 来访问记录，来加快查找的速度。这个映射函数叫做散列函数，存放记录的数组叫做散列表。 Hash表有Hashtable、HashMap、ConcurrentHashMap、LinkedHashMap、TreeMap. 给定表M，存在函数f(key)，对任意给定的关键字值key，代入函数后若能得到包含该关键字的记录在表中的">
-  
-    <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
-  
-  
-    <link rel="icon" href="http://7u2hdm.com1.z0.glb.clouddn.com/favicon.ico">
-  
-  <link rel="stylesheet" href="/css/style.css">
-  
+block title
+  title= page.title + ' | ' + config.title
 
-  
-  <!-- baidu webmaster push -->
-  <script src='//push.zhanzhang.baidu.com/push.js'></script>
-</head>
-<body class="home blog custom-background custom-font-enabled single-author">
-  <div id="page" class="hfeed site">
-      <header id="masthead" class="site-header" role="banner">
-    <hgroup>
-      <h1 class="site-title">
-        <a href="/" title="Hexo" rel="home">Hexo</a>
-      </h1>
-      
-        <script type="text/javascript" src="http://api.hitokoto.us/rand?encode=js&charset=utf-8"></script>
-        <h2 class="site-description"><script>hitokoto();</script></h2>
-      
-    </hgroup>
+block content
+  .post
+    h1.post-title= page.title
+    .post-meta
+      if theme.comment
+        include _partial/comment_count
+        +comment-count(page.path)
+      p
+        span.date= page.date.format(theme.date_formats.post)
+        if page.categories.length > 0
+          span
+            for category in page.categories.toArray()
+              a.category(href=url_for(category.path))= category.name 
+        if theme.busuanzi == true
+          span
+            i#busuanzi_container_page_pv
+              i#busuanzi_value_page_pv
+              i= '' + __('hits')
+    .post-content
+      != page.content
+    include _partial/tag
+    .post-share
+      include _partial/share
+    include _partial/post_nav
+    #comments
+      include _partial/comments
 
-    <nav id="site-navigation" class="main-navigation" role="navigation">
-            <button class="menu-toggle">菜单</button>
-            <a class="assistive-text" href="/#content" title="跳至内容">跳至内容</a><!--TODO-->
-            <div class="menu-main-container">
-                <ul id="menu-main" class="nav-menu">
-                
-                    <li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="http://it-ebooks.flygon.net/">电子书</a></li>
-                
-                    <li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://github.com/wizardforcel">代码仓库</a></li>
-                
-                    <li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="http://flygon.net/resume/zh/">简历</a></li>
-                
-                    <li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="/donors">捐赠名单</a></li>
-                
-                    <li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="/about">留言板</a></li>
-                
-                    <li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="/atom.xml">RSS</a></li>
-                
-                    <li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://github.com/wizardforcel/blog">fork me on github</a></li>
-                
-                </ul>
-            </div>
-    </nav>
-</header>
-      <div id="main" class="wrapper">
-        <div id="primary" class="site-content"><div id="content" role="main"><article id="post-hash表都有哪几种类型、冲突如何解决" class="post-hash表都有哪几种类型、冲突如何解决 post type-post status-publish format-standard hentry">
-    <!---->
+block tocmodel
+  if theme.toc.enable == true 
+    .widget(id='toc')
+      .widget-title
+        i(class='fa fa-fei')= __('contents')
+      != toc(page.content, {list_number: theme.toc.number})
 
-      <header class="entry-header">
-        
-        
-  
-    <h1 class="entry-title article-title">
-      hash表都有哪几种类型、冲突如何解决
-    </h1>
-  
-
-        
-        <div class="comments-link">
-            
-            <a href="/2018/06/20/hash表都有哪几种类型、冲突如何解决/#comments" class="leave-reply">评论</a>
-            
-            <a href="javascript:void(0);" data-url="http://yoursite.com/2018/06/20/hash表都有哪几种类型、冲突如何解决/" data-id="cjimuph860001c5zn4khwko08" class="leave-reply bdsharebuttonbox" data-cmd="more">分享</a>
-        </div><!-- .comments-link -->
-      </header><!-- .entry-header -->
-
-    <div class="entry-content">
-      
-        <h3 id="Hash表的概述"><a href="#Hash表的概述" class="headerlink" title="Hash表的概述"></a>Hash表的概述</h3><ul>
-<li>Hash表是一种数据结构，它通过把关键码值映射到表中的一个位置 来访问记录，来加快查找的速度。这个映射函数叫做散列函数，存放记录的数组叫做散列表。</li>
-<li>Hash表有Hashtable、HashMap、ConcurrentHashMap、LinkedHashMap、TreeMap.</li>
-<li>给定表M，存在函数f(key)，对任意给定的关键字值key，代入函数后若能得到包含该关键字的记录在表中的地址，则称表M为哈希(Hash）表，函数f(key)为哈希(Hash) 函数。</li>
-<li>哈希表查找是查找中的一种，还有顺序查找等其他方法但是都很麻烦，都要进行多次的比较最终才能得到查找的数据，而哈希表查找就不用，哈希表只要知道对应的Key就能通过哈希函数带入一键得到想要查找的数据，是不是很方便，但是就像“人无完人”一样，哈希查找也有缺点，会产生冲突，而冲突是无法避免的，我们只能说尽可能的减少冲突来优化哈希表并且要解决冲突。</li>
-</ul>
-<h3 id="哈希函数有哪些呢？"><a href="#哈希函数有哪些呢？" class="headerlink" title="哈希函数有哪些呢？"></a>哈希函数有哪些呢？</h3><ul>
-<li>哈希表通过哈希函数能够快速的定位数据元素，我们会根据不同的因素来采用不同的哈希函数。一般因素有：计算哈希函数所需要的时间、关键字的长度、哈希表的大小、关键字的分布情况以及记录的查找频率。根据这些因素我们有以下几种哈希函数。</li>
-<li>1、直接定址(寻址)法</li>
-<li>2、数字分析法</li>
-<li>3、平方取中法</li>
-<li>4、折叠法</li>
-<li>5、除留余数法</li>
-<li>6、随机数法</li>
-</ul>
-<h4 id="直接定址（寻址）法"><a href="#直接定址（寻址）法" class="headerlink" title="直接定址（寻址）法"></a>直接定址（寻址）法</h4><ul>
-<li>取关键字的某个线性函数值为散列地址，如f(key) = a·key + b(a、b是常数)</li>
-<li>这个函数具有局限性、跟哈希表的大小相关、集合不能太大、也就是事先知道这个集合多大，适合查找表较小并且连续的情况。这个限制其实蛮大的，所以虽然它很简单但现实中用到的并不多。</li>
-</ul>
-<h4 id="数字分析法"><a href="#数字分析法" class="headerlink" title="数字分析法"></a>数字分析法</h4><ul>
-<li>如果关键字是由很多位数字组成的，我们可以考虑使用数字分析法、分析所有关键字的分布以及关键字的位数并从中提取分布均匀的若干位或它们的组合作为地址。</li>
-<li>这个函数取决于关键字的长度，所以如果能提前能估计出全体关键字的每一位上各种数字出现的频度就可以考虑用这个方法。</li>
-<li>如果抽取出的数字有冲突我们可以对数字进行反转、左/右环位移、叠加等方法。最后得出一个散列函数使得所有关键字都能分配到相应的位置。</li>
-</ul>
-<h4 id="平方取中法"><a href="#平方取中法" class="headerlink" title="平方取中法"></a>平方取中法</h4><ul>
-<li>取关键字平方后然后取中间的几位当作散列地址。这个适用于关键字位数不多而关键字中得数字重复频率高得，取平方是为了扩大差别。</li>
-</ul>
-<h4 id="折叠法"><a href="#折叠法" class="headerlink" title="折叠法"></a>折叠法</h4><ul>
-<li>折叠法是从左至右将关键字分割成位数相等得几个部分，最后一部分不够没事，然后将这几部分叠加求和。最后根据你的哈希表得长度来取出后面几位来当作哈希地址。</li>
-<li>有时候可能不能保证分布均匀，还可以从一端到另一端来回折叠后再对齐相加。</li>
-<li>叠加法不需要事先知道关键字得分布，比较适用于关键字位数比较多得情况。</li>
-</ul>
-<h4 id="除留取余法"><a href="#除留取余法" class="headerlink" title="除留取余法"></a>除留取余法</h4><ul>
-<li>设定哈希函数为<br>H(key) = key MOD p   ( p≤m )，其中， m为表长，p 为不大于 m 的素数，或是不含20以下的质因子。</li>
-<li>这个方法得关键取决于取得p,p取得不会就容易得出同样得结果，也就是所谓得冲突。</li>
-</ul>
-<h4 id="随机数法"><a href="#随机数法" class="headerlink" title="随机数法"></a>随机数法</h4><ul>
-<li>设定哈希函数为:H(key) = Random(key)其中，Random 为伪随机函数。</li>
-<li>这份方法适用于长度不等的关键字。</li>
-</ul>
-<h5 id="提示：无论关键字是英文字符还是中文字符等都能转化为数字，如Unicode码或者是ASCII码，所以也能用上这些方法。"><a href="#提示：无论关键字是英文字符还是中文字符等都能转化为数字，如Unicode码或者是ASCII码，所以也能用上这些方法。" class="headerlink" title="提示：无论关键字是英文字符还是中文字符等都能转化为数字，如Unicode码或者是ASCII码，所以也能用上这些方法。"></a>提示：无论关键字是英文字符还是中文字符等都能转化为数字，如Unicode码或者是ASCII码，所以也能用上这些方法。</h5><h3 id="哈希表处理冲突的方法和特征"><a href="#哈希表处理冲突的方法和特征" class="headerlink" title="哈希表处理冲突的方法和特征"></a>哈希表处理冲突的方法和特征</h3><ul>
-<li>处理冲突其实是为产生冲突的关键字寻找下一个哈希地址。<h4 id="方法如下："><a href="#方法如下：" class="headerlink" title="方法如下："></a>方法如下：</h4></li>
-<li>开放定址法</li>
-<li>再散列函数法</li>
-<li>链地址法</li>
-<li>公共溢出区法</li>
-</ul>
-<h4 id="开放定址法"><a href="#开放定址法" class="headerlink" title="开放定址法"></a>开放定址法</h4><ul>
-<li>为产生冲突的关键字地址 H(key) 求得一个地址序列： H0, H1, H2, …, Hs  1≤s≤m-1，Hi = ( H(key)                 +di  ) MOD m，其中： i=1, 2, …, s，H(key)为哈希函数;m为哈希表长;</li>
-</ul>
-<h4 id="再散列函数法"><a href="#再散列函数法" class="headerlink" title="再散列函数法"></a>再散列函数法</h4><ul>
-<li>事先准备多个函数，当发生冲突的时候就换一个散列函数计算，这样总会把冲突解决的</li>
-<li>这个方法可以使得关键字不聚集，但是由于不断的更换函数增加了计算的时间。</li>
-</ul>
-<h4 id="链地址法"><a href="#链地址法" class="headerlink" title="链地址法"></a>链地址法</h4><ul>
-<li>将所有为同义词的关键字存储在一个单链表中，称这个表为同义词子表，在散列表中只存储所有同义词子表的头指针。</li>
-<li>链地址法提供了绝对不会出现找不到地址的保障。但是也带来了在查找时需要遍历单例表的性能损耗。</li>
-</ul>
-<h4 id="公共溢出区法"><a href="#公共溢出区法" class="headerlink" title="公共溢出区法"></a>公共溢出区法</h4><ul>
-<li>给所有产生冲突的关键字找个地方存放，也就是建立一个公共的溢出区来存放这些数据。</li>
-<li>查找时，先通过散列函数来计算出散列地址与基本表中对应的位置进行比对，如果不相等，就去溢出表进行顺序查找。</li>
-<li>当然如果冲突数据不多这个方法性能还是很高的。</li>
-</ul>
-<h4 id="备注：参考文档："><a href="#备注：参考文档：" class="headerlink" title="备注：参考文档："></a>备注：参考文档：</h4><ul>
-<li><a href="http://blog.csdn.net/a236209186/article/details/51747599" target="_blank" rel="noopener">http://blog.csdn.net/a236209186/article/details/51747599</a></li>
-<li>《大话数据结构》 程杰著</li>
-</ul>
-
-      
-    </div><!-- .entry-content -->
-
-    <footer class="entry-meta">
-    <a href="/2018/06/20/hash表都有哪几种类型、冲突如何解决/">
-    <time datetime="2018-06-20T07:59:47.000Z" class="entry-date">
-        2018-06-20
-    </time>
-</a>
-    
-    
-    </footer>
-</article>
-
-
-    
-<nav class="nav-single">
-    <h3 class="assistive-text">文章导航</h3>
-    
-    
-        <span class="nav-next"><a href="/2018/06/20/Android端接入银联支付具体步骤-Android-studio版/" rel="next">Android端接入银联支付具体步骤(Android studio版) <span class="meta-nav">→</span></a></span>
-    
-</nav><!-- .nav-single -->
-
-
-
-
-
-
-<section id="comments">
-  <!-- 多说评论框 start -->
-  <div class="ds-thread" data-thread-key="post-hash表都有哪几种类型、冲突如何解决" data-title="hash表都有哪几种类型、冲突如何解决" data-url="http://yoursite.com/2018/06/20/hash表都有哪几种类型、冲突如何解决/"></div>
-  <!-- 多说评论框 end -->
-  <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
-  <script type="text/javascript">
-  var duoshuoQuery = {short_name:'flhexo'};
-    (function() {
-	  var ds = document.createElement('script');
-	  ds.type = 'text/javascript';ds.async = true;
-	  ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-	  ds.charset = 'UTF-8';
-	  (document.getElementsByTagName('head')[0]
-	   || document.getElementsByTagName('body')[0]).appendChild(ds);
-    })();
-  </script>
-  <!-- 多说公共JS代码 end -->
-</section>
-
-
-</div></div>
-        <div id="secondary" class="widget-area" role="complementary">
-  
-    <aside class="widget">
-    <h3 class="widget-title">关于我</h3>
-    <div class="widget-content">
-      <p>邮箱：admin(at)flygon.net</p>
-      <p>QQ：562826179</p>
-      <iframe width="100%" height="110" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=0&fansRow=1&ptype=1&speed=0&skin=1&isTitle=0&noborder=0&isWeibo=0&isFans=1&uid=2216356441&verifier=2e06a95d&dpc=1"></iframe>
-      
-      <iframe width="100%" height="320" frameborder="0" scrolling="no" src="https://cdn.jsdelivr.net/github-cards/1.0.2/cards/medium.html?user=wizardforcel&identity=ghcard-wizardforcel-1"></iframe>
-    </div>
-</aside>
-  
-    <aside class="widget">
-    <h3 class="widget-title">赞助我</h3>
-    <div class="widget-content">
-      <img src='/css/images/qr_alipay.png' style='width:100%;' />
-    </div>
-</aside>
-  
-    
-  <aside class="widget">
-    <h3 class="widget-title">Music</h3>
-    <div class="widget-content">
-      <audio src="http://7u2hdm.com1.z0.glb.clouddn.com/bg.mp3" controls="controls"
-             style="width:100%">
-        您的浏览器不支持 audio 标签。
-      </audio>
-    </div>
-  </aside>
-
-  
-    
-  <aside class="widget">
-    <h3 class="widget-title">Recents</h3>
-    <div class="widget-content">
-      <ul>
-        
-          <li>
-            <a href="/2018/06/20/hash表都有哪几种类型、冲突如何解决/">hash表都有哪几种类型、冲突如何解决</a>
-          </li>
-        
-          <li>
-            <a href="/2018/06/20/Android端接入银联支付具体步骤-Android-studio版/">Android端接入银联支付具体步骤(Android studio版)</a>
-          </li>
-        
-          <li>
-            <a href="/2018/06/20/test-my-site/">test_my_site</a>
-          </li>
-        
-          <li>
-            <a href="/2018/06/20/hello-world/">Hello World</a>
-          </li>
-        
-      </ul>
-    </div>
-  </aside>
-
-  
-    
-  <aside class="widget">
-    <h3 class="widget-title">Archives</h3>
-    <div class="widget-content">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a><span class="archive-list-count">4</span></li></ul>
-    </div>
-  </aside>
-
-  
-    
-  
-    
-  
-    <aside class="widget">
-    <h3 class="widget-title">友情链接</h3>
-    <div class="widget-content">
-<ul id='link-list'>
-<!-- link begin -->
-<li><a href="http://www.258ch.com/">苍海国际</a></li>
-<li><a href="http://www.714.hk/">梦殇国际</a></li>
-<li><a href="http://cuican.name/">璀璨</a></li>
-<li><a href="http://www.giuem.com/">Giuem</a></li>
-<li><a href="http://www.woaiye.com/">我爱夜</a></li>
-<li><a href="http://moelove.info/">MoeLove</a></li>
-<li><a href='http://xiaohudie.net/'>小蝴蝶</a></li>
-<li><a href='http://www.wczf.net/'>微尘逐风</a></li>
-<li><a href='http://cyto.top/'>Cytosine</a></li>
-<li><a href='https://cismon.net/'>Pensieve</a></li>
-<li><a href="http://gaocegege.com/Blog/">高策</a></li>
-<li><a href='http://zhangwenli.com/blog/'>羡辙杂俎</a></li>
-<li><a href="http://www.geekzu.cn/">极客族</a></li>
-<li><a href="http://hardrain980.com">骤雨</a></li>
-<li><a href="http://lolil.lofter.com/">庭园</a></li>
-<li><a href="http://www.sunweihu.com/">墨涩网</a></li>
-<li><a href='http://lvycf.com'>HDL</a></li>
-<li><a href='http://www.farquer.cn/'>farquer</a></li>
-<li><a href='https://loveincode.cnblogs.com/'>loveincode</a></li>
-<li><a href='https://minemine.cc/'>Minemine</a></li>
-<!-- link end -->
-</ul>
-    </div>
-</aside>
-  
-    <aside class="widget">
-    <h3 class="widget-title">传送门</h3>
-    <div class="widget-content">
-<ul>
-<!-- link begin -->
-<li><a href='https://xue.glgoo.net/'>学术搜索</a></li>
-<li><a href='https://web.archive.org/'>WebArchive（需 Hosts）</a></li>
-<li><a href='https://coding.net/u/scaffrey/p/hosts/git'>常用 Hosts</a></li>
-<li><a href='https://gitee.com/wizardforcel/sniffing-research'>流量嗅探研究</a></li>
-<li><a href='https://www.sci-hub.cn/'>Scihub</a></li>
-<!-- link end -->
-</ul>
-    </div>
-</aside>
-  
-    <aside class="widget">
-    <h3 class="widget-title">统计</h3>
-    <div class="widget-content">
-      <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1000045945'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s22.cnzz.com/z_stat.php%3Fid%3D1000045945%26online%3D1' type='text/javascript'%3E%3C/script%3E"));</script>
-    </div>
-</aside>
-
-  
-</div>
-      </div>
-      <footer id="colophon" role="contentinfo">
-    <p>&copy; 2018 John Doe
-    All rights reserved.</p>
-    <p>Powered by <a href="http://hexo.io/" target="_blank">Hexo</a></p>
-</footer>
-    <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"1","bdMiniList":false,"bdPic":"","bdStyle":"2","bdSize":"16"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
-
-<script src="/js/jquery-2.0.3.min.js"></script>
-
-
-  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
-  <script src="/fancybox/jquery.fancybox.pack.js"></script>
-
-
-<script src="/js/script.js"></script>
-
-<script src="/js/navigation.js"></script>
-
-<script>
-    //Kill XP and IE8
-    (function(){
-        var ua = navigator.userAgent;
-        var res = /Windows NT (\d+\.\d+)/.exec(ua);
-        var xpOrLower = res && JSON.parse(res[1]) < 6;
-        res = /MSIE (\d+\.\d+)/.exec(ua);
-        var ie8OrLower = res && JSON.parse(res[1]) < 9;
-        if(xpOrLower || ie8OrLower)
-        {
-            alert('请不要用XP及之前的Windows系统，和IE8及之前的IE浏览器访问本站！');
-            location.href = "about:blank";
-        }
-        var fromBaiduSE = /^https?:\/\/www.baidu.com/.test(document.referrer);
-        if(fromBaiduSE)
-        {
-            alert('检测到你还在使用百度搜索，作为一个程序员，这是一种自暴自弃！\n\n做不作恶的程序员，从不用百度开始！')
-            location.href = "about:blank";
-        }
-    })();
-</script>
-
-<div id="bg"></div>
-
-  </div>
-</body>
-</html>
+block pageOnly
+  if theme.toc.enable == true 
+    script(type='text/javascript', src=url_for(theme.js) + '/toctotop.js' + '?v=' + theme.version, async)
+  else 
+    script(type='text/javascript', src=url_for(theme.js) + '/totop.js' + '?v=' + theme.version, async)
+  include _partial/comments_js
